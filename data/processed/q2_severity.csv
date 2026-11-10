@@ -1,0 +1,43 @@
+"Age group","road_user_group","Hospitalisations","nf_bed_days","avg_stay_days"
+"0-7","Car occupant",3620,14427,3.99
+"0-7","Heavy vehicle, bus or van",89,177,1.99
+"0-7","Motorcyclist",382,917,2.4
+"0-7","Other or unknown",167,350,2.1
+"0-7","Pedal cyclist",2297,3661,1.59
+"0-7","Pedestrian",1450,5947,4.1
+"17-25","Car occupant",50210,192428,3.83
+"17-25","Heavy vehicle, bus or van",1529,6836,4.47
+"17-25","Motorcyclist",23005,99101,4.31
+"17-25","Other or unknown",1247,5323,4.27
+"17-25","Pedal cyclist",8127,17590,2.16
+"17-25","Pedestrian",4807,29831,6.21
+"26-39","Car occupant",47260,181352,3.84
+"26-39","Heavy vehicle, bus or van",2469,12452,5.04
+"26-39","Motorcyclist",26312,133326,5.07
+"26-39","Other or unknown",1381,5560,4.03
+"26-39","Pedal cyclist",16735,39214,2.34
+"26-39","Pedestrian",5338,39181,7.34
+"40-64","Car occupant",55436,252481,4.55
+"40-64","Heavy vehicle, bus or van",4994,30144,6.04
+"40-64","Motorcyclist",33479,215377,6.43
+"40-64","Other or unknown",2149,11189,5.21
+"40-64","Pedal cyclist",30364,100334,3.3
+"40-64","Pedestrian",7307,75048,10.27
+"65-74","Car occupant",15627,102209,6.54
+"65-74","Heavy vehicle, bus or van",935,6167,6.6
+"65-74","Motorcyclist",3100,27625,8.91
+"65-74","Other or unknown",522,4810,9.21
+"65-74","Pedal cyclist",5115,27868,5.45
+"65-74","Pedestrian",2772,37223,13.43
+"75+","Car occupant",17438,152303,8.73
+"75+","Heavy vehicle, bus or van",901,6908,7.67
+"75+","Motorcyclist",885,10446,11.8
+"75+","Other or unknown",541,9025,16.68
+"75+","Pedal cyclist",1784,12716,7.13
+"75+","Pedestrian",3656,57630,15.76
+"8-16","Car occupant",7549,27418,3.63
+"8-16","Heavy vehicle, bus or van",265,709,2.68
+"8-16","Motorcyclist",5159,15720,3.05
+"8-16","Other or unknown",338,1118,3.31
+"8-16","Pedal cyclist",10940,20485,1.87
+"8-16","Pedestrian",3202,14757,4.61
