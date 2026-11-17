@@ -1,19 +1,135 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-AU">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Explore five questions about road crash hospitalisations in Australia from 2011 to 2021.">
     <title>Hospitalised Injuries from Road Crashes in Australia</title>
+    <link rel="icon" href="data:,">
     <link rel="stylesheet" href="css/style.css">
+    <script defer src="js/chapter-links.js"></script>
   </head>
-  <body>
-    <header>
-      <h1>Hospitalised Injuries from Road Crashes in Australia</h1>
-      <p>COS30045 Data Visualisation Project – Group 19</p>
+  <body id="top">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="page-width header-inner">
+        <a class="site-name" href="index.html" aria-current="page">Australian Road Injury</a>
+        <nav aria-label="Main navigation">
+          <ul class="chapter-links">
+            <li><a href="q1.html">Q1 – Road users</a></li>
+            <li><a href="q2.html">Q2 – Injury severity</a></li>
+            <li><a href="q3.html">Q3 – States &amp; territories</a></li>
+            <li><a href="q4.html">Q4 – Age &amp; sex</a></li>
+            <li><a href="q5.html">Q5 – Remoteness</a></li>
+            <li><a href="#data">Data notes</a></li>
+          </ul>
+        </nav>
+      </div>
     </header>
-    <main>
-      <p>Visualisations coming soon.</p>
+
+    <main id="main" tabindex="-1">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="page-width hero-inner">
+          <div class="hero-copy">
+            <p class="hero-context">COS30045 Data Visualisation · Group 19</p>
+            <h1 id="page-title"><span>Hospitalised injuries</span> <span>from road crashes</span> <span>in Australia</span></h1>
+            <p class="hero-intro">Explore who was hospitalised, how long they stayed and how patterns varied across Australia.</p>
+            <a class="primary-link" href="#questions">Explore the questions <span aria-hidden="true">↓</span></a>
+          </div>
+          <dl class="data-scope">
+            <div>
+              <dt>Years covered</dt>
+              <dd class="date-range">2011–2021</dd>
+            </div>
+            <div>
+              <dt>Measure</dt>
+              <dd>Road crash hospitalisations</dd>
+            </div>
+            <div>
+              <dt>Source</dt>
+              <dd><a href="#data">BITRE</a></dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="page-width question-overview" id="questions" aria-labelledby="questions-title">
+        <h2 id="questions-title">Research questions</h2>
+        <ol class="question-list">
+            <li id="q1">
+              <a class="question-link" href="q1.html" aria-labelledby="overview-q1">
+                <span class="chapter-number" aria-hidden="true">Q1</span>
+                <span class="question-link-copy">
+                  <strong id="overview-q1">Road user trends</strong>
+                  <span>Which road user groups drove the rise in hospitalisations from 2011 to 2021, and how did each group's share change?</span>
+                </span>
+                <span class="question-link-arrow" aria-hidden="true">→</span>
+              </a>
+            </li>
+            <li id="q2">
+              <a class="question-link" href="q2.html" aria-labelledby="overview-q2">
+                <span class="chapter-number" aria-hidden="true">Q2</span>
+                <span class="question-link-copy">
+                  <strong id="overview-q2">Injury severity</strong>
+                  <span>Which road users and age groups had the longest average hospital stays after a road crash?</span>
+                </span>
+                <span class="question-link-arrow" aria-hidden="true">→</span>
+              </a>
+            </li>
+            <li id="q3">
+              <a class="question-link" href="q3.html" aria-labelledby="overview-q3">
+                <span class="chapter-number" aria-hidden="true">Q3</span>
+                <span class="question-link-copy">
+                  <strong id="overview-q3">States and territories</strong>
+                  <span>How did hospitalisation trends and average hospital stays differ across Australian states and territories?</span>
+                </span>
+                <span class="question-link-arrow" aria-hidden="true">→</span>
+              </a>
+            </li>
+            <li id="q4">
+              <a class="question-link" href="q4.html" aria-labelledby="overview-q4">
+                <span class="chapter-number" aria-hidden="true">Q4</span>
+                <span class="question-link-copy">
+                  <strong id="overview-q4">Age and sex profiles</strong>
+                  <span>How did the most commonly hospitalised road user groups vary by age and sex?</span>
+                </span>
+                <span class="question-link-arrow" aria-hidden="true">→</span>
+              </a>
+            </li>
+            <li id="q5">
+              <a class="question-link" href="q5.html" aria-labelledby="overview-q5">
+                <span class="chapter-number" aria-hidden="true">Q5</span>
+                <span class="question-link-copy">
+                  <strong id="overview-q5">Hospitalisations by remoteness</strong>
+                  <span>How did the distribution of hospitalisations across major cities, regional areas and remote areas differ between First Nations and non-Indigenous people? How did those differences change from 2011 to 2021?</span>
+                </span>
+                <span class="question-link-arrow" aria-hidden="true">→</span>
+              </a>
+            </li>
+        </ol>
+      </section>
+
+      <section class="data-notes" id="data" aria-labelledby="data-title">
+        <div class="page-width data-inner">
+          <h2 id="data-title">Data notes</h2>
+          <div>
+            <p>The Bureau of Infrastructure and Transport Research Economics published these hospitalisation data for 2011–2021.</p>
+            <p>Q5 uses hospitalisations with a known area of residence. Each share uses the total for the same population group and year. These shares describe where hospitalised people lived. Estimating rates of injury would require population data.</p>
+            <ul class="source-links">
+              <li><a href="https://www.bitre.gov.au/resource/road-safety/hospitalised-injury">BITRE dataset</a></li>
+              <li><a href="https://github.com/Kidemi04/DataVis_G19">Project repository</a></li>
+            </ul>
+          </div>
+        </div>
+      </section>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+
+    <footer class="site-footer">
+      <div class="page-width footer-inner">
+        <p>Group 19 · COS30045 Data Visualisation · Swinburne University</p>
+        <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
+      </div>
+    </footer>
   </body>
 </html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="How did the distribution of hospitalisations across major cities, regional areas and remote areas differ between First Nations and non-Indigenous people? How did those differences change from 2011 to 2021?">
+    <title>Q5 – Hospitalisations by remoteness | Australian Road Injury</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/q5.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script defer src="js/q5.js"></script>
+  </head>
+  <body id="top">
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="site-header">
+      <div class="page-width header-inner">
+        <a class="site-name" href="index.html">Australian Road Injury</a>
+        <nav aria-label="Main navigation">
+          <ul class="chapter-links">
+            <li><a href="q1.html">Q1 – Road users</a></li>
+            <li><a href="q2.html">Q2 – Injury severity</a></li>
+            <li><a href="q3.html">Q3 – States &amp; territories</a></li>
+            <li><a href="q4.html">Q4 – Age &amp; sex</a></li>
+            <li><a href="q5.html" aria-current="page">Q5 – Remoteness</a></li>
+            <li><a href="index.html#data">Data notes</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" tabindex="-1">
+      <div class="page-width question-page">
+        <section class="chapter question-chapter" id="q5" aria-labelledby="title-q5">
+          <header class="chapter-intro">
+            <p class="chapter-number">Q5</p>
+            <h1 id="title-q5">Hospitalisations by remoteness</h1>
+            <p>How did the distribution of hospitalisations across major cities, regional areas and remote areas differ between First Nations and non-Indigenous people? How did those differences change from 2011 to 2021?</p>
+          </header>
+          <div class="chart-panel q5-panel" id="chart-q5">
+            <p class="q5-status" id="q5-status" role="status">Loading Q5 data…</p>
+            <noscript>Enable JavaScript to view the Q5 visualisations.</noscript>
+            <div id="q5-visualisations" hidden>
+              <section aria-labelledby="q5-heatmap-title">
+                <h3 id="q5-heatmap-title">Where did the two groups’ shares differ?</h3>
+                <p class="q5-help">Select a cell to inspect a year and change the region shown in the trend. Use the arrow keys to move between cells.</p>
+                <div class="q5-legend">
+                  <p>First Nations share minus non-Indigenous share</p>
+                  <div class="q5-colour-scale" aria-hidden="true"></div>
+                  <div class="q5-legend-labels">
+                    <span id="q5-scale-low"></span>
+                    <span>0 pp</span>
+                    <span id="q5-scale-high"></span>
+                  </div>
+                  <p>Negative values indicate a lower First Nations share. Positive values indicate a higher share. <strong>pp</strong> means percentage points.</p>
+                </div>
+                <div class="q5-heatmap-interaction">
+                  <div class="q5-details" role="region" aria-labelledby="q5-details-title">
+                    <p id="q5-details-title"></p>
+                    <dl>
+                      <div><dt>First Nations</dt><dd id="q5-first-nations"></dd></div>
+                      <div><dt>Non-Indigenous</dt><dd id="q5-non-indigenous"></dd></div>
+                      <div><dt>Share gap</dt><dd id="q5-gap"></dd></div>
+                    </dl>
+                  </div>
+                  <div id="q5-heatmap"></div>
+                </div>
+              </section>
+
+              <section class="q5-block" aria-labelledby="q5-trend-title">
+                <div class="q5-trend-heading">
+                  <h3 id="q5-trend-title">How did the gap change?</h3>
+                  <label for="q5-area">Area of residence</label>
+                  <select id="q5-area" aria-controls="q5-trend"></select>
+                </div>
+                <p class="q5-help" id="q5-trend-summary" aria-live="polite"></p>
+                <div id="q5-trend"></div>
+              </section>
+
+              <section class="q5-block" aria-labelledby="q5-endpoints-title">
+                <h3 id="q5-endpoints-title">Compare 2011 with 2021</h3>
+                <p class="q5-help">The last column shows how the size of the gap changed, measured by its distance from zero.</p>
+                <table class="q5-endpoints">
+                  <thead>
+                    <tr>
+                      <th scope="col">Area</th>
+                      <th scope="col">2011 gap</th>
+                      <th scope="col">2021 gap</th>
+                      <th scope="col">Change in size</th>
+                    </tr>
+                  </thead>
+                  <tbody id="q5-endpoint-rows"></tbody>
+                </table>
+                <p class="q5-takeaway" id="q5-takeaway"></p>
+                <details class="q5-method">
+                  <summary>How the percentages are calculated</summary>
+                  <p>For each group and year, divide hospitalisations in the residence area by all hospitalisations with a known residence area for that group and year. The area describes where patients lived. These percentages show the distribution of hospitalisations. An estimate of injury risk would require population data.</p>
+                </details>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <nav class="question-pager" aria-label="Explore more questions">
+          <a href="q4.html"><span aria-hidden="true">←</span> Q4 – Age &amp; sex</a>
+          <a href="index.html#data">Data notes <span aria-hidden="true">→</span></a>
+        </nav>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="page-width footer-inner">
+        <p>Group 19 · COS30045 Data Visualisation · Swinburne University</p>
+        <a href="#top">Back to top <span aria-hidden="true">↑</span></a>
+      </div>
+    </footer>
+  </body>
+</html>
