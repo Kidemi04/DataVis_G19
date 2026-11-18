@@ -12,7 +12,36 @@
   font-size: 0.92rem;
 }
 
+.q1-controls {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.9rem;
+}
+
+.q1-mode-button {
+  min-height: 44px;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.q1-mode-button[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--surface);
+}
+
+.q1-mode-button:hover {
+  border-color: var(--accent);
+}
+
 .q1-chart {
+  position: relative;
   width: 100%;
   margin-top: 0.65rem;
 }
@@ -50,6 +79,20 @@
   font-variant-numeric: tabular-nums;
 }
 
+.q1-measure-label {
+  fill: var(--text);
+  font-size: 0.65rem;
+}
+
+.q1-series {
+  transition: opacity 120ms ease-out;
+}
+
+.q1-series.q1-dimmed,
+.q1-annotation.q1-dimmed {
+  opacity: 0.2;
+}
+
 .q1-slope {
   stroke-width: 2.5;
 }
@@ -58,28 +101,103 @@
   stroke-width: 1.5;
 }
 
+.q1-series.q1-highlighted .q1-slope {
+  stroke-width: 4;
+}
+
+.q1-series.q1-highlighted .q1-slope-muted {
+  stroke-width: 2.2;
+}
+
+.q1-hit-target {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 14;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.q1-hit-target:focus-visible {
+  stroke: var(--accent);
+  stroke-opacity: 0.25;
+  outline: none;
+}
+
 .q1-dot {
   stroke: var(--surface);
   stroke-width: 1.5;
+  pointer-events: none;
 }
 
-.q1-label-leader {
+.q1-start-leader,
+.q1-end-leader {
   stroke-width: 1;
   stroke-opacity: 0.7;
+  pointer-events: none;
 }
 
-.q1-endpoint-label {
+.q1-start-label,
+.q1-end-label {
   font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.q1-annotation-arrow {
+  fill: none;
+  stroke-width: 1.2;
+}
+
+.q1-annotation-arrow marker path {
+  fill: context-stroke;
+}
+
+.q1-annotation-label {
+  font-size: 0.75rem;
+  font-weight: 750;
+  text-anchor: middle;
+}
+
+.q1-tooltip {
+  position: absolute;
+  z-index: 1;
+  max-width: min(22rem, calc(100% - 0.5rem));
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 2px 8px rgb(21 21 21 / 14%);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+.q1-data-note {
+  margin-top: 0.6rem;
+  color: var(--text);
+  font-size: 0.8rem;
+  line-height: 1.45;
 }
 
 @media (max-width: 31.25rem) {
-  .q1-endpoint-label {
+  .q1-start-label,
+  .q1-end-label {
     font-size: 0.59rem;
   }
 
   .q1-year,
   .q1-zero {
     font-size: 0.7rem;
+  }
+
+  .q1-measure-label {
+    font-size: 0.6rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .q1-series {
+    transition: none;
   }
 }
