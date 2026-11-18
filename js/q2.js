@@ -20,6 +20,7 @@
   }
 
   const ageGroups = ["0-7", "8-16", "17-25", "26-39", "40-64", "65-74", "75+"];
+  const ages = ["All ages", ...ageGroups];
   const roadUsers = [
     { name: "Car occupant", colour: "#0072B2" },
     { name: "Motorcyclist", colour: "#E69F00" },
@@ -30,6 +31,7 @@
   ];
   const formatNumber = d3.format(",d");
   const formatDays = d3.format(".1f");
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   function parseRow(row) {
     return {
@@ -84,27 +86,27 @@
   function renderChart(data) {
     const heading = document.createElement("h2");
     heading.className = "q2-heading";
-    heading.textContent = "Pedestrians stay in hospital the longest";
 
     const takeaway = document.createElement("p");
     takeaway.className = "q2-takeaway";
+    takeaway.setAttribute("aria-live", "polite");
 
     const controls = document.createElement("div");
     controls.className = "q2-controls";
-    const ageLabel = document.createElement("label");
-    ageLabel.setAttribute("for", "q2-age");
-    ageLabel.textContent = "Age group";
-    const ageControl = document.createElement("select");
-    ageControl.id = "q2-age";
-    ageControl.setAttribute("aria-controls", "q2-chart");
-    ["All ages", ...ageGroups].forEach((age) => {
-      const option = document.createElement("option");
-      option.value = age;
-      option.textContent = age;
-      ageControl.append(option);
-    });
-    ageControl.value = "All ages";
-    controls.append(ageLabel, ageControl);
+    controls.setAttribute("role", "group");
+    controls.setAttribute("aria-label", "Filter by age group");
+    const ageButtons = new Map();
+    for (const age of ages) {
+      const button = document.createElement("button");
+      button.className = "q2-age-button";
+      button.type = "button";
+      button.textContent = age;
+      button.setAttribute("aria-pressed", String(age === "All ages"));
+      button.setAttribute("aria-controls", "q2-chart");
+      button.addEventListener("click", () => setAge(age));
+      ageButtons.set(age, button);
+      controls.append(button);
+    }
 
     const legend = document.createElement("div");
     legend.className = "q2-size-legend";
@@ -116,9 +118,16 @@
 
     const chartContainer = document.createElement("div");
     chartContainer.className = "q2-chart";
+    const tooltip = document.createElement("div");
+    tooltip.className = "q2-tooltip";
+    tooltip.id = "q2-tooltip";
+    tooltip.setAttribute("role", "tooltip");
+    tooltip.hidden = true;
+    chartContainer.append(tooltip);
+
     const note = document.createElement("p");
     note.className = "q2-chart-note";
-    note.textContent = "Bubble area represents total non-fatal bed days.";
+    note.textContent = "Average stay = non-fatal bed days ÷ hospitalisations, weighted across groups. Length of stay is a proxy for severity. Bed-day counting rules changed in 2015–16. Source: BITRE (2023).";
     panel.replaceChildren(heading, takeaway, controls, legend, chartContainer, note);
 
     const svg = d3.select(chartContainer).append("svg")
@@ -132,27 +141,36 @@
     let selectedAge = "All ages";
     let chartWidth = 0;
     let chartHeight = 440;
+    let hoveredGroup = null;
+    let focusedGroup = null;
 
     function rowsForAge(age) {
       if (age === "All ages") return data.allAges;
       return roadUsers.map((group) => data.byAgeAndGroup.get(age).get(group.name));
     }
 
+    function displayName(group) {
+      if (group === "Pedestrian") return "Pedestrians";
+      if (group === "Motorcyclist") return "Motorcyclists";
+      if (group === "Pedal cyclist") return "Pedal cyclists";
+      if (group === "Car occupant") return "Car occupants";
+      if (group === "Heavy vehicle, bus or van") return "Heavy vehicle, bus or van occupants";
+      return "People in the other or unknown group";
+    }
+
     function updateSummary(rows) {
-      const pedestrian = rows.find((row) => row.group === "Pedestrian");
-      const cyclist = rows.find((row) => row.group === "Pedal cyclist");
-      const ratio = cyclist.averageStay === 0 ? null : pedestrian.averageStay / cyclist.averageStay;
-      takeaway.textContent = "Pedestrians stayed " + formatDays(pedestrian.averageStay) +
-        " days on average, about " + (ratio === null ? "—" : formatDays(ratio)) +
-        " times longer than cyclists (" + formatDays(cyclist.averageStay) + " days)." +
-        (selectedAge === "All ages" ? "" : " Age " + selectedAge + ".");
+      const longest = d3.greatest(rows, (row) => row.averageStay);
+      const shortest = d3.least(rows, (row) => row.averageStay);
+      heading.textContent = displayName(longest.group) + " have the longest hospital stays";
+      takeaway.textContent = displayName(longest.group) + " had the longest average stay at " +
+        formatDays(longest.averageStay) + " days. " + displayName(shortest.group) +
+        " had the shortest average stay at " + formatDays(shortest.averageStay) + " days.";
     }
 
     function updateLegend(size) {
       legend.querySelectorAll(".q2-legend-item").forEach((item) => item.remove());
       const maximum = d3.max(size.domain());
-      const referenceValues = [maximum / 4, maximum / 2, maximum];
-      for (const value of referenceValues) {
+      for (const value of [maximum / 4, maximum / 2, maximum]) {
         const item = document.createElement("span");
         item.className = "q2-legend-item";
         const circle = document.createElement("span");
@@ -166,7 +184,36 @@
       }
     }
 
-    function draw(width) {
+    function updateTooltip(row, pointerEvent) {
+      tooltip.textContent = row.group + " · " + selectedAge + " – " +
+        formatNumber(row.hospitalisations) + " cases · " + formatDays(row.averageStay) +
+        " days avg · " + formatNumber(row.bedDays) + " bed days";
+      tooltip.hidden = false;
+      const bounds = chartContainer.getBoundingClientRect();
+      let x;
+      let y;
+      if (pointerEvent) {
+        [x, y] = d3.pointer(pointerEvent, chartContainer);
+      } else {
+        x = row.cx / chartWidth * bounds.width;
+        y = row.cy / chartHeight * bounds.height;
+      }
+      const tooltipWidth = tooltip.getBoundingClientRect().width;
+      tooltip.style.left = Math.max(4, Math.min(x - tooltipWidth / 2, bounds.width - tooltipWidth - 4)) + "px";
+      tooltip.style.top = Math.max(4, y - 44) + "px";
+    }
+
+    function updateTooltipForActive() {
+      const activeGroup = hoveredGroup || focusedGroup;
+      if (!activeGroup) {
+        tooltip.hidden = true;
+        return;
+      }
+      const row = rowsForAge(selectedAge).find((item) => item.group === activeGroup);
+      if (row) updateTooltip(row);
+    }
+
+    function draw(width, animate) {
       const compact = width < 500;
       chartHeight = compact ? 470 : 440;
       const margin = {
@@ -194,6 +241,17 @@
       const radius = d3.scaleSqrt()
         .domain([0, bedDayMaximum])
         .range([0, compact ? 25 : 31]);
+      const points = rows.map((row) => ({
+        ...row,
+        roadUser: roadUsers.find((group) => group.name === row.group),
+        cx: x(row.hospitalisations),
+        cy: y(row.averageStay),
+        radius: radius(row.bedDays),
+      }));
+      const transition = (selection) => {
+        const current = selection.interrupt();
+        return animate && !reducedMotion.matches ? current.transition().duration(700) : current;
+      };
 
       svg.attr("viewBox", "0 0 " + width + " " + chartHeight)
         .attr("aria-label", (selectedAge === "All ages" ? "All ages" : "Age " + selectedAge) +
@@ -203,18 +261,31 @@
             formatNumber(row.bedDays) + " bed days.").join(" "));
 
       const gridTicks = y.ticks(5);
-      grid.selectAll("line")
-        .data(gridTicks)
-        .join("line")
-        .attr("x1", plotLeft)
-        .attr("x2", plotRight)
-        .attr("y1", (value) => y(value))
-        .attr("y2", (value) => y(value));
+      const gridLines = grid.selectAll("line")
+        .data(gridTicks, (value) => value);
+      gridLines.exit().remove();
+      transition(gridLines.enter().append("line")
+        .attr("x1", plotLeft).attr("x2", plotRight)
+        .attr("y1", (value) => y(value)).attr("y2", (value) => y(value)))
+        .attr("x1", plotLeft).attr("x2", plotRight)
+        .attr("y1", (value) => y(value)).attr("y2", (value) => y(value));
+      transition(gridLines)
+        .attr("x1", plotLeft).attr("x2", plotRight)
+        .attr("y1", (value) => y(value)).attr("y2", (value) => y(value));
 
-      xAxis.attr("transform", "translate(0," + plotBottom + ")")
-        .call(d3.axisBottom(x).ticks(compact ? 4 : 5).tickFormat(d3.format("~s")).tickSizeOuter(0));
-      yAxis.attr("transform", "translate(" + plotLeft + ",0)")
-        .call(d3.axisLeft(y).ticks(5).tickSizeOuter(0));
+      const xAxisGenerator = d3.axisBottom(x).ticks(compact ? 4 : 5)
+        .tickFormat(d3.format("~s")).tickSizeOuter(0);
+      const yAxisGenerator = d3.axisLeft(y).ticks(5).tickSizeOuter(0);
+      if (animate && !reducedMotion.matches) {
+        xAxis.interrupt().transition().duration(700).call(xAxisGenerator)
+          .attr("transform", "translate(0," + plotBottom + ")");
+        yAxis.interrupt().transition().duration(700).call(yAxisGenerator)
+          .attr("transform", "translate(" + plotLeft + ",0)");
+      } else {
+        xAxis.interrupt().attr("transform", "translate(0," + plotBottom + ")").call(xAxisGenerator);
+        yAxis.interrupt().attr("transform", "translate(" + plotLeft + ",0)").call(yAxisGenerator);
+      }
+
       axesTitles.selectAll("text").remove();
       axesTitles.append("text")
         .attr("class", "q2-axis-label")
@@ -228,22 +299,41 @@
         .attr("text-anchor", "middle")
         .text("Average stay (days)");
 
-      const points = rows.map((row) => ({
-        ...row,
-        roadUser: roadUsers.find((group) => group.name === row.group),
-        cx: x(row.hospitalisations),
-        cy: y(row.averageStay),
-        radius: radius(row.bedDays),
-      }));
       const bubbles = bubbleLayer.selectAll(".q2-bubble")
         .data(points, (row) => row.group)
         .join("circle")
         .attr("class", "q2-bubble")
+        .attr("tabindex", 0)
+        .attr("role", "img")
+        .attr("aria-describedby", "q2-tooltip")
+        .on("pointerenter", function (event, row) {
+          hoveredGroup = row.group;
+          updateTooltip(row, event);
+        })
+        .on("pointermove", function (event, row) {
+          if (hoveredGroup === row.group) updateTooltip(row, event);
+        })
+        .on("pointerleave", function () {
+          hoveredGroup = null;
+          updateTooltipForActive();
+        })
+        .on("focus", function (_, row) {
+          focusedGroup = row.group;
+          updateTooltip(row);
+        })
+        .on("blur", function () {
+          focusedGroup = null;
+          updateTooltipForActive();
+        })
+        .attr("aria-label", (row) => row.group + " · " + selectedAge + " – " +
+          formatNumber(row.hospitalisations) + " cases · " + formatDays(row.averageStay) +
+          " days average · " + formatNumber(row.bedDays) + " bed days")
+        .attr("fill", (row) => row.roadUser.colour);
+
+      transition(bubbles)
         .attr("cx", (row) => row.cx)
         .attr("cy", (row) => row.cy)
-        .attr("r", (row) => row.radius)
-        .attr("fill", (row) => row.roadUser.colour)
-        .attr("aria-hidden", "true");
+        .attr("r", (row) => row.radius);
 
       const labels = bubbleLayer.selectAll(".q2-bubble-label")
         .data(points, (row) => row.group)
@@ -271,7 +361,7 @@
       for (const point of points.slice().sort((a, b) => a.cy - b.cy)) {
         const label = labels.filter((row) => row.group === point.group).node();
         const labelWidth = label.getComputedTextLength();
-        const options = candidates.map((candidate) => {
+        const options = candidates.map((candidate, index) => {
           const anchor = candidate.side === "left" ? "end" :
             candidate.side === "middle" ? "middle" : "start";
           const textX = candidate.side === "left" ? point.cx - point.radius - gap :
@@ -293,12 +383,13 @@
           const labelOverlap = placed.reduce((sum, other) =>
             sum + (left < other.right + 3 && right + 3 > other.left &&
               top < other.bottom + 2 && bottom + 2 > other.top ? 100000 : 0), 0);
-          const preferred = candidates.indexOf(candidate);
-          return { anchor, textX, textY, left, right, top, bottom,
-            score: outside * 1000000 + bubbleOverlap + labelOverlap + preferred * 0.1 };
+          return {
+            anchor, textX, textY, left, right, top, bottom,
+            score: outside * 1000000 + bubbleOverlap + labelOverlap + index * 0.1,
+          };
         }).sort((a, b) => a.score - b.score);
         const chosen = options[0];
-        d3.select(label)
+        transition(d3.select(label))
           .attr("x", chosen.textX)
           .attr("y", chosen.textY)
           .attr("text-anchor", chosen.anchor);
@@ -307,18 +398,23 @@
 
       updateSummary(rows);
       updateLegend(radius);
+      updateTooltipForActive();
     }
 
-    ageControl.addEventListener("change", () => {
-      selectedAge = ageControl.value;
-      draw(chartWidth);
-    });
+    function setAge(age) {
+      if (age === selectedAge) return;
+      selectedAge = age;
+      for (const [name, button] of ageButtons) {
+        button.setAttribute("aria-pressed", String(name === selectedAge));
+      }
+      draw(chartWidth, true);
+    }
 
     function resizeChart() {
       const width = Math.floor(chartContainer.getBoundingClientRect().width);
       if (width < 240 || width === chartWidth) return;
       chartWidth = width;
-      draw(width);
+      draw(width, false);
     }
 
     resizeChart();
