@@ -1,0 +1,85 @@
+.q1-heading {
+  padding-inline-start: 0.6rem;
+  border-inline-start: 3px solid var(--accent);
+  color: var(--ink);
+  font-size: clamp(1.2rem, 2.2vw, 1.55rem);
+  letter-spacing: -0.025em;
+}
+
+.q1-takeaway {
+  margin-top: 0.4rem;
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.q1-chart {
+  width: 100%;
+  margin-top: 0.65rem;
+}
+
+.q1-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.q1-status {
+  min-height: clamp(8rem, 15vw, 13rem);
+  display: grid;
+  place-items: center;
+  background: var(--paper);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.q1-grid line {
+  stroke: var(--line);
+  stroke-opacity: 0.42;
+}
+
+.q1-axis line {
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+
+.q1-year,
+.q1-zero {
+  fill: var(--text);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.q1-slope {
+  stroke-width: 2.5;
+}
+
+.q1-slope-muted {
+  stroke-width: 1.5;
+}
+
+.q1-dot {
+  stroke: var(--surface);
+  stroke-width: 1.5;
+}
+
+.q1-label-leader {
+  stroke-width: 1;
+  stroke-opacity: 0.7;
+}
+
+.q1-endpoint-label {
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 31.25rem) {
+  .q1-endpoint-label {
+    font-size: 0.59rem;
+  }
+
+  .q1-year,
+  .q1-zero {
+    font-size: 0.7rem;
+  }
+}
