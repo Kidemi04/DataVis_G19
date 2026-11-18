@@ -1,0 +1,142 @@
+.q2-heading {
+  padding-inline-start: 0.6rem;
+  border-inline-start: 3px solid var(--accent);
+  color: var(--ink);
+  font-size: clamp(1.2rem, 2.2vw, 1.55rem);
+  letter-spacing: -0.025em;
+}
+
+.q2-takeaway {
+  margin-top: 0.4rem;
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+.q2-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.q2-controls label {
+  color: var(--text);
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+
+.q2-controls select {
+  min-width: 8rem;
+  min-height: 44px;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+.q2-size-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.75rem;
+  min-height: 3rem;
+  margin-top: 0.6rem;
+  color: var(--text);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.q2-legend-title {
+  font-weight: 650;
+}
+
+.q2-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.q2-legend-circle {
+  flex: none;
+  display: inline-block;
+  border: 1px solid var(--text);
+  border-radius: 50%;
+}
+
+.q2-chart {
+  width: 100%;
+  margin-top: 0.2rem;
+}
+
+.q2-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.q2-status {
+  display: grid;
+  min-height: clamp(8rem, 15vw, 13rem);
+  place-items: center;
+  background: var(--paper);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
+.q2-grid line {
+  stroke: var(--line);
+  stroke-opacity: 0.42;
+}
+
+.q2-axis {
+  color: var(--text);
+  font-size: 0.72rem;
+}
+
+.q2-axis path,
+.q2-axis line {
+  stroke: var(--line);
+}
+
+.q2-axis-title {
+  fill: var(--text);
+  font-size: 0.78rem;
+}
+
+.q2-bubble {
+  fill-opacity: 0.78;
+  stroke: var(--surface);
+  stroke-width: 1.5;
+}
+
+.q2-bubble-label {
+  font-size: 0.72rem;
+  font-weight: 650;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-linejoin: round;
+  stroke-width: 3px;
+}
+
+.q2-chart-note {
+  margin-top: 0.1rem;
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 31.25rem) {
+  .q2-axis {
+    font-size: 0.65rem;
+  }
+
+  .q2-axis-title {
+    font-size: 0.68rem;
+  }
+
+  .q2-bubble-label {
+    font-size: 0.64rem;
+  }
+}
