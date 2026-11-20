@@ -1,6 +1,8 @@
+// Bubble chart comparing road-user hospitalisations and average hospital stays.
 (() => {
   "use strict";
 
+  // Load the chart container and prepare the loading state.
   const panel = document.getElementById("chart-q2");
   if (!panel) {
     console.error("Q2 chart panel could not be found.");
@@ -33,6 +35,7 @@
   const formatDays = d3.format(".1f");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
+  // Prepare data rows and shared formatting values.
   function parseRow(row) {
     return {
       age: row["Age group"]?.trim(),
@@ -43,6 +46,7 @@
     };
   }
 
+  // Validate the rows and prepare the all-ages totals.
   function validateRows(rows) {
     const expectedGroups = new Set(roadUsers.map((group) => group.name));
     const byAgeAndGroup = d3.index(rows, (row) => row.age, (row) => row.group);
@@ -83,6 +87,7 @@
     return { byAgeAndGroup, allAges };
   }
 
+  // Build the chart controls, layout, and summary elements.
   function renderChart(data) {
     const heading = document.createElement("h2");
     heading.className = "q2-heading";
@@ -144,6 +149,7 @@
     let hoveredGroup = null;
     let focusedGroup = null;
 
+    // Select rows for the currently active age filter.
     function rowsForAge(age) {
       if (age === "All ages") return data.allAges;
       return roadUsers.map((group) => data.byAgeAndGroup.get(age).get(group.name));
@@ -184,6 +190,7 @@
       }
     }
 
+    // Show tooltip details for pointer and keyboard interactions.
     function updateTooltip(row, pointerEvent) {
       tooltip.textContent = row.group + " · " + selectedAge + " – " +
         formatNumber(row.hospitalisations) + " cases · " + formatDays(row.averageStay) +
@@ -213,6 +220,7 @@
       if (row) updateTooltip(row);
     }
 
+    // Draw the chart and configure the responsive layout.
     function draw(width, animate) {
       const compact = width < 500;
       chartHeight = compact ? 470 : 440;
@@ -230,6 +238,7 @@
       const xMaximum = d3.max(rows, (row) => row.hospitalisations);
       const yMaximum = d3.max(rows, (row) => row.averageStay);
       const bedDayMaximum = d3.max(rows, (row) => row.bedDays);
+      // Create scales for hospitalisations, stay length, and bubble area.
       const x = d3.scaleLinear()
         .domain([0, xMaximum * 1.12])
         .nice()
@@ -248,6 +257,7 @@
         cy: y(row.averageStay),
         radius: radius(row.bedDays),
       }));
+      // Use transitions for mark and label movement unless reduced motion is requested.
       const transition = (selection) => {
         const current = selection.interrupt();
         return animate && !reducedMotion.matches ? current.transition().duration(700) : current;
@@ -330,6 +340,7 @@
           " days average · " + formatNumber(row.bedDays) + " bed days")
         .attr("fill", (row) => row.roadUser.colour);
 
+      // Draw and position the bubble marks and their labels.
       transition(bubbles)
         .attr("cx", (row) => row.cx)
         .attr("cy", (row) => row.cy)
@@ -343,6 +354,7 @@
         .text((row) => (compact ? row.roadUser.shortName || row.group : row.group) +
           " · " + formatDays(row.averageStay) + " d");
 
+      // Place bubble labels to reduce overlap with marks and other labels.
       const placed = [];
       const labelHeight = compact ? 13 : 15;
       const gap = compact ? 5 : 8;
@@ -401,6 +413,7 @@
       updateTooltipForActive();
     }
 
+    // Filter the chart by the selected age group.
     function setAge(age) {
       if (age === selectedAge) return;
       selectedAge = age;
@@ -410,6 +423,7 @@
       draw(chartWidth, true);
     }
 
+    // Resize the chart to fit the available container width.
     function resizeChart() {
       const width = Math.floor(chartContainer.getBoundingClientRect().width);
       if (width < 240 || width === chartWidth) return;
@@ -421,6 +435,7 @@
     new ResizeObserver(resizeChart).observe(chartContainer);
   }
 
+  // Load and validate the processed chart data.
   d3.csv("data/processed/q2_severity.csv", parseRow)
     .then((rows) => renderChart(validateRows(rows)))
     .catch((error) => {
