@@ -1,6 +1,8 @@
+// Slope chart comparing road-user hospitalisations between 2011 and 2021.
 (() => {
   "use strict";
 
+  // Load the chart container and prepare the loading state.
   const panel = document.getElementById("chart-q1");
   if (!panel) {
     console.error("Q1 chart panel could not be found.");
@@ -33,6 +35,7 @@
   const formatShare = d3.format(".1f");
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
+  // Prepare data rows and shared formatting values.
   function parseRow(row) {
     return {
       year: Number(row["Calendar year"]),
@@ -42,6 +45,7 @@
     };
   }
 
+  // Validate the loaded data and map rows by road-user group and year.
   function validateRows(rows) {
     const expectedGroups = new Set(groups.map((group) => group.name));
     const byGroupAndYear = d3.index(rows, (row) => row.group, (row) => row.year);
@@ -150,7 +154,7 @@
 
     const note = document.createElement("p");
     note.className = "q1-data-note";
-    note.textContent = "Non-fatal hospitalisations from road traffic crashes. Victoria (2012) and NSW (2017) changed their admission rules, so some changes over time are not directly comparable. Source: BITRE (2023).";
+    note.textContent = "Non-fatal hospitalisations from road traffic crashes. Counts are not adjusted for population growth, so part of the rise reflects a larger population. Victoria (2012) and NSW (2017) changed their admission rules, so some changes over time are not directly comparable. Source: BITRE (2023).";
     panel.replaceChildren(heading, takeaway, controls, chartContainer, note);
 
     const ariaSummary = series.map((item) =>
@@ -189,6 +193,7 @@
     let focusedName = null;
     let pinnedName = null;
 
+    // Format values consistently for the selected count or share mode.
     function formattedValue(row, selectedMode) {
       return selectedMode === "share" ? formatShare(valueOf(row, selectedMode)) + "%" :
         formatNumber(valueOf(row, selectedMode));
@@ -216,6 +221,7 @@
       }
     }
 
+    // Show tooltip details for pointer and keyboard interactions.
     function showTooltip(item, pointerEvent) {
       const start = valueOf(item.start, mode);
       const end = valueOf(item.end, mode);
@@ -240,6 +246,7 @@
       tooltip.style.top = Math.max(4, y - 42) + "px";
     }
 
+    // Toggle whether a slope remains highlighted after selection.
     function togglePinned(item) {
       pinnedName = pinnedName === item.group.name ? null : item.group.name;
       updateHighlight();
@@ -260,6 +267,7 @@
       updateHighlight();
     }
 
+    // Draw the chart and configure the responsive layout.
     function draw(width, animate) {
       const compact = width < 500;
       const height = compact ? 390 : 340;
@@ -277,6 +285,7 @@
       const maxValue = d3.max(series, (item) =>
         Math.max(currentValue(item.start), currentValue(item.end))
       );
+      // Create scales that map chart values to the plot positions.
       const y = d3.scaleLinear()
         .domain([0, maxValue])
         .nice()
@@ -284,6 +293,7 @@
       const labelGap = compact ? 19 : 21;
       const leftLabels = spreadLabels(series, "start", currentValue, y, plotTop + 8, plotBottom - 6, labelGap);
       const rightLabels = spreadLabels(series, "end", currentValue, y, plotTop + 8, plotBottom - 6, labelGap);
+      // Use transitions for mark and label movement unless reduced motion is requested.
       const transition = (selection) => {
         if (!animate || reducedMotion.matches) return selection;
         return selection.interrupt().transition().duration(600);
@@ -333,6 +343,7 @@
         .attr("transform", "translate(12," + ((plotTop + plotBottom) / 2) + ") rotate(-90)")
         .text(mode === "share" ? "Share of hospitalisations (%)" : "Hospitalisations");
 
+      // Draw the slope marks and endpoint labels.
       const seriesGroups = seriesLayer.selectAll(".q1-series")
         .data(series, (item) => item.group.name)
         .join((enter) => {
@@ -420,6 +431,7 @@
       updateEndpoint("start", "start", leftX, -1, leftLabels);
       updateEndpoint("end", "end", rightX, 1, rightLabels);
 
+      // Add annotations for the largest increases and decreases.
       const changes = series.map((item) => ({
         series: item,
         change: changePercent(currentValue(item.start), currentValue(item.end)),
@@ -469,6 +481,7 @@
       updateHighlight();
     }
 
+    // Switch between the count and share chart measures.
     function setMode(nextMode) {
       if (mode === nextMode) return;
       mode = nextMode;
@@ -481,6 +494,7 @@
     countButton.addEventListener("click", () => setMode("count"));
     shareButton.addEventListener("click", () => setMode("share"));
 
+    // Resize the chart to fit the available container width.
     function resizeChart() {
       const width = Math.floor(chartContainer.getBoundingClientRect().width);
       if (width < 240 || width === chartWidth) return;
@@ -492,6 +506,7 @@
     new ResizeObserver(resizeChart).observe(chartContainer);
   }
 
+  // Load and validate the processed chart data.
   d3.csv("data/processed/q1_road_user_trend.csv", parseRow)
     .then((rows) => renderChart(validateRows(rows)))
     .catch((error) => {
