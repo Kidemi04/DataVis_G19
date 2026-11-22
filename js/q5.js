@@ -1,3 +1,4 @@
+// Compare First Nations and non-Indigenous hospitalisation share gaps by residence area.
 (() => {
   "use strict";
 
@@ -18,6 +19,7 @@
   const formatNumber = d3.format(",d");
   const formatDecimal = d3.format(".1f");
 
+  // Read and prepare one processed Q5 CSV row.
   function parseRow(row) {
     const number = (key) => {
       const value = row[key]?.trim();
@@ -37,6 +39,7 @@
     };
   }
 
+  // Validate the complete year and residence-area grid.
   function validateRows(rows) {
     const byAreaAndYear = d3.index(rows, (row) => row.area, (row) => row.year);
     const close = (actual, expected) => Math.abs(actual - expected) < 0.01;
@@ -64,6 +67,7 @@
     return byAreaAndYear;
   }
 
+  // Choose black or white text for readable heatmap cells.
   function readableText(background) {
     const colour = d3.rgb(background);
     const linear = (channel) => {
@@ -74,6 +78,7 @@
     return luminance > 0.179 ? "#000" : "#fff";
   }
 
+  // Build the heatmap, linked trend chart and summary details.
   function renderQ5(rows, byAreaAndYear) {
     const heatmap = d3.select("#q5-heatmap");
     const trend = d3.select("#q5-trend");
@@ -91,6 +96,7 @@
     let chartWidth = 0;
     let cells;
 
+    // Set the colour scale and area selector.
     d3.select(".q5-colour-scale")
       .style("background", "linear-gradient(to right, " + gapColour.join(", ") + ")");
     d3.select("#q5-scale-low").text("−" + limit + " pp");
@@ -104,10 +110,12 @@
       selectCell(byAreaAndYear.get(this.value).get(selected.year));
     });
 
+    // Format a share with its count and denominator.
     function shareDetail(count, total, share) {
       return formatDecimal(share) + "% (" + formatNumber(count) + " of " + formatNumber(total) + ")";
     }
 
+    // Update the selected cell's detail panel.
     function showDetails(row) {
       d3.select("#q5-details-title").text(row.area + " · " + row.year);
       d3.select("#q5-first-nations").text(shareDetail(row.firstCount, row.firstTotal, row.firstShare));
@@ -115,12 +123,14 @@
       d3.select("#q5-gap").text(formatGap(row.gap) + " pp");
     }
 
+    // Keep the selected cell available for keyboard navigation.
     function updateCells() {
       cells
         .attr("tabindex", (row) => row === keyboardCell ? 0 : -1)
         .attr("aria-pressed", (row) => String(row === selected));
     }
 
+    // Move focus through the heatmap with arrow keys.
     function handleArrow(event, row) {
       const step = {
         ArrowLeft: [0, -1],
@@ -139,6 +149,7 @@
       }
     }
 
+    // Draw the accessible heatmap table.
     function drawHeatmap() {
       const table = heatmap.selectAll("table").data([null]).join("table").attr("class", "q5-heatmap");
       table.selectAll("*").remove();
@@ -183,6 +194,7 @@
       updateCells();
     }
 
+    // Draw the annual gap trend for the selected area.
     function drawTrend() {
       const series = years.map((year) => byAreaAndYear.get(selected.area).get(year));
       const margin = { top: 18, right: 17, bottom: 34, left: 36 };
@@ -231,6 +243,7 @@
         .attr("r", (row) => row === selected ? 5.5 : 3);
     }
 
+    // Calculate the 2011 and 2021 endpoint changes.
     const endpoints = areas.map((area) => {
       const start = byAreaAndYear.get(area).get(firstYear).gap;
       const end = byAreaAndYear.get(area).get(lastYear).gap;
@@ -256,6 +269,7 @@
       " to " + lastYear + ", " + changed(remote) + " and " + changed(regional) + "."
     );
 
+    // Synchronise the selected heatmap cell, details and trend chart.
     function updateSelection() {
       showDetails(selected);
       areaControl.property("value", selected.area);
@@ -266,6 +280,7 @@
       );
     }
 
+    // Select a heatmap cell and redraw the linked trend.
     function selectCell(row) {
       selected = row;
       keyboardCell = row;
@@ -280,6 +295,7 @@
     });
     updateSelection();
 
+    // Resize the charts and switch to the compact heatmap layout when needed.
     function resizeCharts() {
       const width = Math.floor(trend.node().getBoundingClientRect().width);
       if (width < 120 || width === chartWidth) return;
@@ -300,6 +316,7 @@
     new ResizeObserver(resizeCharts).observe(trend.node());
   }
 
+  // Load and validate the processed Q5 data.
   d3.csv("data/processed/q5_remoteness_gap.csv", parseRow)
     .then((rows) => renderQ5(rows, validateRows(rows)))
     .catch((error) => {
